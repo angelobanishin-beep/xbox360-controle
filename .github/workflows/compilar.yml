@@ -20,8 +20,8 @@ jobs:
         export PATH="/usr/local/xenon/bin:/opt/xenon/bin:/usr/share/xenon/bin:$PATH"
         export DEVKITXENON="/usr/local/xenon"
         
-        # Compila vinculando todas as dependencias de input e usb do Xbox 360
-        xenon-g++ main.cpp -o controle.elf -lxenon -lusb -lutils -lm
+        # Compila de forma direta e pura
+        xenon-g++ main.cpp -o controle.elf -lxenon
         xenon-elf-objcopy -O binary controle.elf controle.xex
 
     - name: Disponibilizar para Download
