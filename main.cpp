@@ -4,36 +4,26 @@
 #include <input/input.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 
 // Constantes de Deadzone (5% do valor maximo)
-const int ANALOG_DEADZONE = 1638; 
-const int TRIGGER_DEADZONE = 13;   
+#define ANALOG_DEADZONE 1638
+#define TRIGGER_DEADZONE 13
 
 int main() {
-    // Inicializacao padrao obrigatoria do hardware do Xbox 360
+    // Inicializacao minima do hardware
     xenos_init();
     console_init();
     usb_init();
 
-    printf("Controle Xbox 360 - 5%% Deadzone e Float Prontos!\n");
+    printf("Controle Xbox 360 Pronto (Float e Deadzone 5%%)\n");
 
     while (1) {
-        // Atualiza os perifericos USB do console
         usb_do_poll();
 
         struct controller_data_s ctrl;
-        // Le o estado do primeiro controle conectado
+        // Le o primeiro controle conectado
         if (get_controller_data(&ctrl, 0)) {
             
-            // --- BOTOES DE CLIQUE DOS ANALOGICOS (LS e RS) ---
-            if (ctrl.buttons & BUTTON_STICK_LEFT) {
-                printf("Botao LS Pressionado!\n");
-            }
-            if (ctrl.buttons & BUTTON_STICK_RIGHT) {
-                printf("Botao RS Pressionado!\n");
-            }
-
             // --- GATILHOS (0.0f ate 1.0f - Deadzone 5%) ---
             float leftTrigger = 0.0f;
             float rightTrigger = 0.0f;
@@ -45,24 +35,26 @@ int main() {
                 rightTrigger = (float)(ctrl.rt - TRIGGER_DEADZONE) / (255.0f - TRIGGER_DEADZONE);
             }
 
-            if (leftTrigger > 0.0f)  printf("LT Float: %f\n", leftTrigger);
-            if (rightTrigger > 0.0f) printf("RT Float: %f\n", rightTrigger);
-
             // --- ANALOGICOS (-1.0f ate 1.0f - Deadzone 5%) ---
             float thumbLX = 0.0f;
             float thumbLY = 0.0f;
 
-            if (abs(ctrl.s1x) > ANALOG_DEADZONE) {
+            // Tratamento manual de sinal absoluto sem depender de <math.h>
+            int abs_x = (ctrl.s1x < 0) ? -ctrl.s1x : ctrl.s1x;
+            int abs_y = (ctrl.s1y < 0) ? -ctrl.s1y : ctrl.s1y;
+
+            if (abs_x > ANALOG_DEADZONE) {
                 thumbLX = (ctrl.s1x > 0) ? (float)(ctrl.s1x - ANALOG_DEADZONE) / (32767.0f - ANALOG_DEADZONE)
                                          : (float)(ctrl.s1x + ANALOG_DEADZONE) / (32768.0f - ANALOG_DEADZONE);
             }
-            if (abs(ctrl.s1y) > ANALOG_DEADZONE) {
+            if (abs_y > ANALOG_DEADZONE) {
                 thumbLY = (ctrl.s1y > 0) ? (float)(ctrl.s1y - ANALOG_DEADZONE) / (32767.0f - ANALOG_DEADZONE)
                                          : (float)(ctrl.s1y + ANALOG_DEADZONE) / (32768.0f - ANALOG_DEADZONE);
             }
 
-            if (thumbLX != 0.0f || thumbLY != 0.0f) {
-                printf("Analogico Esquerdo -> X: %f Y: %f\n", thumbLX, thumbLY);
+            // Imprime apenas se houver alguma mudanca significativa
+            if (thumbLX != 0.0f || thumbLY != 0.0f || leftTrigger > 0.0f || rightTrigger > 0.0f) {
+                printf("LX: %.2f | LY: %.2f | LT: %.2f | RT: %.2f\n", thumbLX, thumbLY, leftTrigger, rightTrigger);
             }
         }
     }
