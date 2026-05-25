@@ -18,7 +18,14 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y build-essential gcc-powerpc-linux-gnu g++-powerpc-linux-gnu
 
-    - name: Compilar o arquivo C++
+    - name: Compilar usando o Makefile
       run: |
-        # Usa o compilador cross-compile oficial de Linux para arquitetura PowerPC (Xbox 360)
-        powerpc-linux-gnu-g++ main.cpp -o controle.elf -static
+        make
+
+    - name: Disponibilizar para Download
+      uses: actions/upload-artifact@v4
+      with:
+        name: Executavel-Xbox360
+        path: |
+          controle.elf
+          controle.xex
