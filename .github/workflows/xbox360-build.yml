@@ -1,0 +1,40 @@
+name: Compilar para Xbox 360 (LibXenon)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-xenon:
+    runs-on: ubuntu-latest
+    # Usa uma imagem Docker da comunidade que possui a toolchain do Xbox 360 pronta
+    container: devkitpro/devkitxenon:latest
+
+    steps:
+    # 1. Baixa o código do seu repositório para o container
+    - name: Checkout do código
+      uses: actions/checkout@v4
+
+    # 2. Configura as variáveis de ambiente necessárias para a LibXenon
+    - name: Configurar Variáveis de Ambiente
+      run: |
+        echo "XENON=/opt/devkitpro/devkitXenon" >> $GITHUB_ENV
+        echo "PATH=/opt/devkitpro/devkitXenon/bin:$PATH" >> $GITHUB_ENV
+
+    # 3. Compila o seu código usando o Makefile do projeto
+    - name: Compilar com Makefile
+      run: |
+        make clean
+        make
+
+    # 4. Salva o binário gerado (ex: arquivo .elf ou .xex) como artefato
+    - name: Salvar Executável do Xbox 360
+      uses: actions/artifacts@v4
+      with:
+        name: executavel-xbox360
+        # Substitua abaixo pela extensão/nome gerado pelo seu Makefile (ex: xenon.elf)
+        path: |
+          *.elf
+          *.xex
