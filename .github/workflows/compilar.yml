@@ -15,14 +15,13 @@ jobs:
     - name: Baixar o codigo do repositorio
       uses: actions/checkout@v4
 
-    - name: Compilar o arquivo C++ com Caminhos Corrigidos
+    - name: Compilar o arquivo C++
       run: |
-        # Adiciona os caminhos padrão do LibXenon na busca do sistema
         export PATH="/usr/local/xenon/bin:/opt/xenon/bin:/usr/share/xenon/bin:$PATH"
         export DEVKITXENON="/usr/local/xenon"
         
-        # Tenta compilar usando a arquitetura de codificacao correta
-        xenon-g++ main.cpp -o controle.elf -lxenon -lm
+        # Compila vinculando todas as dependencias de input e usb do Xbox 360
+        xenon-g++ main.cpp -o controle.elf -lxenon -lusb -lutils -lm
         xenon-elf-objcopy -O binary controle.elf controle.xex
 
     - name: Disponibilizar para Download
