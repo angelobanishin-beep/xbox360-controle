@@ -5,8 +5,6 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: free60/libxenon:latest
 
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -15,17 +13,12 @@ jobs:
     - name: Baixar o codigo do repositorio
       uses: actions/checkout@v4
 
+    - name: Instalar Ferramentas de Compilacao
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential gcc-powerpc-linux-gnu g++-powerpc-linux-gnu
+
     - name: Compilar o arquivo C++
       run: |
-        export PATH="/usr/local/xenon/bin:/opt/xenon/bin:/usr/share/xenon/bin:$PATH"
-        export DEVKITXENON="/usr/local/xenon"
-        
-        # Compila de forma direta e pura
-        xenon-g++ main.cpp -o controle.elf -lxenon
-        xenon-elf-objcopy -O binary controle.elf controle.xex
-
-    - name: Disponibilizar para Download
-      uses: actions/upload-artifact@v4
-      with:
-        name: Executavel-Xbox360
-        path: controle.xex
+        # Usa o compilador cross-compile oficial de Linux para arquitetura PowerPC (Xbox 360)
+        powerpc-linux-gnu-g++ main.cpp -o controle.elf -static
