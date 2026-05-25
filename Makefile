@@ -1,14 +1,10 @@
-CC = powerpc-linux-gnu-g++
-OBJCOPY = powerpc-linux-gnu-objcopy
+CC = g++
 CFLAGS = -O2 -Wall
 
-all: controle.xex
+all: programa_controle
 
-controle.elf: main.cpp
-	$(CC) $(CFLAGS) main.cpp -o controle.elf
-
-controle.xex: controle.elf
-	$(OBJCOPY) -O binary controle.elf controle.xex
+programa_controle: main.cpp
+	$(CC) $(CFLAGS) main.cpp -o programa_controle
 
 clean:
-	rm -f *.elf *.xex
+	rm -f programa_controle
