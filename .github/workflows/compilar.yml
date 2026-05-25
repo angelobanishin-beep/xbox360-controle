@@ -6,7 +6,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: dynamicas/libxenon-toolchain:latest
+      # Alterado para a imagem oficial mantida pelo projeto do LibXenon
+      image: free60/libxenon:latest
 
     steps:
     - name: Baixar o codigo do repositorio
@@ -14,7 +15,9 @@ jobs:
 
     - name: Compilar o arquivo C++
       run: |
+        # Cria o arquivo ELF usando o compilador oficial da ferramenta
         xenon-g++ main.cpp -o controle.elf -lxenon -lm
+        # Converte para o formato executavel do Xbox 360 (.xex)
         xenon-elf-objcopy -O binary controle.elf controle.xex
 
     - name: Disponibilizar para Download
