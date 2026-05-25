@@ -1,4 +1,4 @@
-#include <xtl.h>
+#include <xtl.h>  // Correção: Adicionado o '#' antes de include
 #include <stdio.h>
 
 // Constantes de Deadzone (5% do valor maximo)
@@ -9,9 +9,10 @@ int main() {
     XINPUT_STATE state;
     DWORD controllerId = 0;
 
+    // Esta mensagem vai para a janela de Output/Debug do PC conectado ao Xbox 360
     printf("Mapeamento Xbox 360 Inicializado!\n");
 
-    while (true) {
+    while (TRUE) { // Alterado para TRUE (padrão XTL/Win32)
         // Limpa a estrutura e le o controle fisico do Xbox 360
         ZeroMemory(&state, sizeof(XINPUT_STATE));
         DWORD result = XInputGetState(controllerId, &state);
@@ -48,7 +49,7 @@ int main() {
                                       : (float)(rawLY + ANALOG_DEADZONE) / (32768.0f - ANALOG_DEADZONE);
             }
 
-            // Imprime na tela do console se houver movimento
+            // Imprime no console de debug se houver movimento relevante
             if (thumbLX != 0.0f || thumbLY != 0.0f || leftTrigger > 0.0f || rightTrigger > 0.0f) {
                 printf("LX: %.2f | LY: %.2f | LT: %.2f | RT: %.2f\n", thumbLX, thumbLY, leftTrigger, rightTrigger);
             }
