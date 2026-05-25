@@ -1,4 +1,6 @@
 #include <xenon/xenon.h>
+#include <console/console.h>
+#include <usb/usbmain.h>
 #include <input/input.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,26 +11,30 @@ const int ANALOG_DEADZONE = 1638;
 const int TRIGGER_DEADZONE = 13;   
 
 int main() {
-    // Inicializa o video e os componentes do Xbox 360
+    // Inicializacao padrao obrigatoria do hardware do Xbox 360
     xenos_init();
     console_init();
     usb_init();
 
-    printf("Lendo controle do Xbox 360 (Nuvem Float + 5%% Deadzone)...\n");
+    printf("Controle Xbox 360 - 5%% Deadzone e Float Prontos!\n");
 
     while (1) {
-        // Atualiza o estado dos perifericos/controles
+        // Atualiza os perifericos USB do console
         usb_do_poll();
 
         struct controller_data_s ctrl;
-        if (get_controller_data(&ctrl, 0)) { // Le o primeiro controle
+        // Le o estado do primeiro controle conectado
+        if (get_controller_data(&ctrl, 0)) {
             
-            // --- BOTOES LS E RS ---
-            if (ctrl.buttons & BUTTON_LOGO) { // Exemplo de botao (LibXenon usa mapeamentos proprios)
-                printf("Botao do Controle Pressionado!\n");
+            // --- BOTOES DE CLIQUE DOS ANALOGICOS (LS e RS) ---
+            if (ctrl.buttons & BUTTON_STICK_LEFT) {
+                printf("Botao LS Pressionado!\n");
+            }
+            if (ctrl.buttons & BUTTON_STICK_RIGHT) {
+                printf("Botao RS Pressionado!\n");
             }
 
-            // --- GATILHOS (Normalizados para Float) ---
+            // --- GATILHOS (0.0f ate 1.0f - Deadzone 5%) ---
             float leftTrigger = 0.0f;
             float rightTrigger = 0.0f;
 
@@ -42,7 +48,7 @@ int main() {
             if (leftTrigger > 0.0f)  printf("LT Float: %f\n", leftTrigger);
             if (rightTrigger > 0.0f) printf("RT Float: %f\n", rightTrigger);
 
-            // --- ANALOGICOS (-1.0f ate 1.0f com Deadzone de 5%) ---
+            // --- ANALOGICOS (-1.0f ate 1.0f - Deadzone 5%) ---
             float thumbLX = 0.0f;
             float thumbLY = 0.0f;
 
@@ -59,8 +65,7 @@ int main() {
                 printf("Analogico Esquerdo -> X: %f Y: %f\n", thumbLX, thumbLY);
             }
         }
-        
-        delay(10); // Evita superaquecimento
     }
     return 0;
 }
+
