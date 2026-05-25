@@ -13,11 +13,6 @@ jobs:
     - name: Baixar o codigo do repositorio
       uses: actions/checkout@v4
 
-    - name: Instalar Ferramentas de Compilacao
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential gcc-powerpc-linux-gnu g++-powerpc-linux-gnu
-
     - name: Compilar usando o Makefile
       run: |
         make
@@ -26,6 +21,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Executavel-Xbox360
-        path: |
-          controle.elf
-          controle.xex
+        path: programa_controle
