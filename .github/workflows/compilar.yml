@@ -6,8 +6,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      # Alterado para a imagem oficial mantida pelo projeto do LibXenon
       image: free60/libxenon:latest
+
+    # Força o GitHub a rodar as extensões na versão moderna exigida
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
     - name: Baixar o codigo do repositorio
@@ -15,9 +18,7 @@ jobs:
 
     - name: Compilar o arquivo C++
       run: |
-        # Cria o arquivo ELF usando o compilador oficial da ferramenta
         xenon-g++ main.cpp -o controle.elf -lxenon -lm
-        # Converte para o formato executavel do Xbox 360 (.xex)
         xenon-elf-objcopy -O binary controle.elf controle.xex
 
     - name: Disponibilizar para Download
