@@ -1,0 +1,26 @@
+name: Compilar para Xbox 360
+
+on: [push] # Executa toda vez que voce salvar o codigo
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: dynamicas/libxenon-toolchain:latest # Container com o compilador do Xbox 360 pronto
+
+    steps:
+    - name: Baixar o codigo do repositorio
+      uses: actions/checkout@v3
+
+    - name: Compilar o arquivo C++
+      run: |
+        # Executa o compilador cross-compile de PowerPC para Xbox 360
+        xenon-g++ main.cpp -o controle.elf -lxenon -lm
+        # Transforma o binario no formato executavel do Xbox 360 (.xex)
+        xenon-elf-objcopy -O binary controle.elf controle.xex
+
+    - name: Disponibilizar para Download
+      uses: actions/upload-artifact@v3
+      with:
+        name: Executavel-Xbox360
+        path: controle.xex
