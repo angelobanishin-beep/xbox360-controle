@@ -1,10 +1,9 @@
-CC = g++
-CFLAGS = -O2 -Wall
+# Definições do Compilador para Xbox 360
+CC      = xenon-gcc
+CXX     = xenon-g++
+LD      = xenon-ld
+OBJCOPY = xenon-objcopy
 
-all: programa_controle
-
-programa_controle: main.cpp
-	$(CC) $(CFLAGS) main.cpp -o programa_controle
-
-clean:
-	rm -f programa_controle
+# Flags recomendadas para a arquitetura Xenon do Xbox 360
+CFLAGS  = -m32 -fno-pic -mpowerpc64 -mcpu=cell
+CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
